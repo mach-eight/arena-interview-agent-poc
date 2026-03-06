@@ -1,23 +1,21 @@
-import {
-  streamText,
-  UIMessage,
-  convertToModelMessages,
-  stepCountIs,
-} from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
-import { tools } from "@/lib/tools";
-import { systemPrompt } from "@/lib/prompts";
-
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const body = await req.text();
 
-  const result = streamText({
-    model: anthropic("claude-sonnet-4-6"),
-    system: systemPrompt,
-    messages: await convertToModelMessages(messages),
-    tools,
-    stopWhen: stepCountIs(6),
+  const response = await fetch("http://localhost:8000/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": req.headers.get("Content-Type") || "application/json",
+    },
+    body,
   });
 
-  return result.toUIMessageStreamResponse();
+  return new Response(response.body, {
+    status: response.status,
+    headers: {
+      "Content-Type":
+        response.headers.get("Content-Type") || "text/event-stream",
+      "x-vercel-ai-ui-message-stream":
+        response.headers.get("x-vercel-ai-ui-message-stream") || "v1",
+    },
+  });
 }
