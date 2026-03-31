@@ -8,3 +8,6 @@ dependencies = [
     "uvicorn[standard]",
     "python-dotenv",
 ]
+
+[tool.black]
+line-length = 120

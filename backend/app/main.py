@@ -2,8 +2,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Load the Anthropic API key from the project root .env.local
 load_dotenv(Path(__file__).resolve().parents[2] / ".env.local")
+
+Path(__file__).resolve().parents[1].joinpath("transcripts").mkdir(exist_ok=True)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
